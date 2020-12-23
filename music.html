@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet"
+     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.1.0/css/all.css" 
+    integrity="sha512-ajhUYg8JAATDFejqbeN7KbF2zyPbbqz04dgOLyGcYEk/MJD3V+HJhJLKvJ2VVlqrr4PwHeGTTWxbI+8teA7snw==" 
+    crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="E:\Saurabh\JSProject\MusicPlayer\Css\music.css" />
+
+</head>
+<body>
+<div class="main_div">
+    <div class="music_container">
+        <h2 id = "title"></h2>
+        <h3 id = "artist"></h3>
+        <div class="image_container">
+            <img id ="img" src = "" alt="aao" /> 
+        </div>
+        <audio id="music" src="" ></audio>
+        <!--------Progress Bar ------>
+        <div class = "progressbar_container" id ="progress_container" >
+            <div class = "progress_duration_meter" >
+                <div id = "current_time">0:00</div>
+                <div id = "duration">2:00</div>
+            </div>    	
+            <div class = "progress_div" id="progress_div" >
+                <div class = "progress" id="progress"></div>
+            </div>    		
+        </div> 
+        <!--------Controls------>
+        <div class="music_controls">
+            <i class="fas fa-arrow-circle-left" id="prev" title="Previous"></i>
+            <i class="fas fa-play-circle main_button" id="play" title="Play"></i>
+            <i class="fas fa-arrow-circle-right" id="next" title="Next"></i>
+        </div>
+    </div>
+</div>
+       
+<script>
+    const music = document.querySelector("audio");
+    const img = document.querySelector("img");
+    const play = document.getElementById("play");
+    const artist = document.getElementById("artist");
+    const title = document.getElementById("title");
+    const prev = document.getElementById("prev");
+    const next = document.getElementById("next");
+    let progress = document.getElementById("progress");
+    let total_duration = document.getElementById("duration");
+    let current_time = document.getElementById("current_time");
+    const progress_div = document.getElementById("progress_div");
+    const songs = [
+        {
+            name: "raje",
+            title:"Ji Raje Ji",
+            artist:"Sukhwinder Singh",
+        },
+        {
+            name: "s1",
+            title:"AAO PYAR KAREN",
+            artist:"Ravindra Peepat",
+        },
+        {
+            name: "s2",
+            title:"Bugadi Majhi",
+            artist:"Asha Bhosle",
+
+        },
+        {
+            name :"Khatam_Hue_Waande",
+            title : "Khatam_Hue_Waande",
+            artist:"Emiway Bantai",
+
+        },
+    ];
+
+    let isPlaying = false;
+
+
+    //for play function
+    const playMusic = () =>{
+    isPlaying = true;
+    music.play();
+    play.classList.replace("fa-play-circle","fa-pause-circle");
+    img.classList.add("anime");
+    };
+
+    //for pause function
+    const pauseMusic = () =>{
+    isPlayeing = false;
+    music.pause();
+    play.classList.replace("fa-pause-circle","fa-play-circle");
+    img.classList.remove("anime");
+    };
+
+    play.addEventListener("click", () => {
+    isPlaying ? pauseMusic() : playMusic();
+   });
+    
+    // Changeing music data
+    const loadSong = (songs) => {
+        title.textContent = songs.title;
+        artist.textContent = songs.artist;
+        music.src = "E:/Saurabh/JSProject/MusicPlayer/Musics/" + songs.name + ".mp3";
+        img.src = "E:/Saurabh/JSProject/MusicPlayer/Images/" + songs.name + ".jpg";
+        //document.getElementById('img').src = "E:\Saurabh\JSProject\MusicPlayer\Images"+ songs.name + ".jpg";
+    };
+
+    //loadSong(songs[2]);
+    songIndex = 2;
+    const nextSong = () =>{
+        //songIndex++;
+        songIndex = (songIndex + 1) % songs.length ;
+        loadSong(songs[songIndex]);
+        playMusic();
+    };
+
+    const prevSong = () =>{
+        //songIndex++;
+        songIndex = (songIndex - 1 + songs.length ) % songs.length;
+        loadSong(songs[songIndex]);
+        playMusic();
+    };
+    // Progress JS Works
+    music.addEventListener("timeupdate",(event)  =>{
+    //console.log(event);
+    const {currentTime, duration}= event.srcElement;
+
+    let progress_time = (currentTime / duration) * 100;
+    progress.style.width = `${progress_time}%`;
+
+    //music duration update
+
+    let mint_duration = Math.floor(duration / 60);
+    let sec_duration = Math.floor(duration % 60);
+
+    let tot_duration = `${mint_duration}:${sec_duration}`;
+    if(duration){
+    total_duration.textContent = `${tot_duration}`;
+    }  
+    
+    //Current duration update
+
+    let mint_currentTime = Math.floor(currentTime / 60);
+    let sec_currentTime = Math.floor(currentTime % 60);
+
+    if(sec_currentTime < 10){
+	sec_currentTime = `0${sec_currentTime}`;
+    }
+    let tot_currentTime = `${mint_currentTime}:${sec_currentTime}`;
+    current_time.textContent = `${tot_currentTime}`;
+         
+    });
+
+    //function for when click on between progress element
+    progress_div.addEventListener("click", (event) =>{
+        console.log(event);
+        const { duration } = music; //const duration = music.duration;
+
+        let move_progress = (event.offsetX / event.srcElement.clientWidth) * duration;
+        music.currentTime = move_progress ;
+    });
+
+    // if music end call next song function
+    music.addEventListener("ended",nextSong);
+    next.addEventListener("click",nextSong);
+    prev.addEventListener("click",prevSong);
+</script>
+</body>
+</html>
+
+
